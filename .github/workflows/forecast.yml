@@ -1,0 +1,26 @@
+name: forecast
+on:
+  schedule: [{ cron: "25 * * * *" }]   # hourly; HRRR files land ~50 min after the cycle
+  workflow_dispatch:
+  push: { branches: [main] }
+permissions: { contents: read, pages: write, id-token: write }
+concurrency: { group: pages, cancel-in-progress: true }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --cpu=wasm32 --force   # WASM build of the GRIB2 decoder
+      - run: node scripts/build-data.mjs        # download + decode HRRR in WASM
+      - run: cp index.html site/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site }
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: "${{ steps.d.outputs.page_url }}" }
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4
