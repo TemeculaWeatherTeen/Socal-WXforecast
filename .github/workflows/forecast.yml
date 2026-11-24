@@ -1,6 +1,7 @@
+# Builds the WASM core, runs the high-accuracy 60 h forecast (jobs may run up to 6 h), and publishes site + frames to GitHub Pages.
 name: forecast
 on:
-  schedule: [{ cron: "25 * * * *" }]   # hourly; HRRR files land ~50 min after the cycle
+  schedule: [{ cron: "30 5,11,17,23 * * *" }]   # after each GFS cycle has reached Open-Meteo
   workflow_dispatch:
   push: { branches: [main] }
 permissions: { contents: read, pages: write, id-token: write }
@@ -8,13 +9,15 @@ concurrency: { group: pages, cancel-in-progress: true }
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: npm install --cpu=wasm32 --force   # WASM build of the GRIB2 decoder
-      - run: node scripts/build-data.mjs        # download + decode HRRR in WASM
-      - run: cp index.html site/index.html
+      - run: npm install
+      - run: npm run build:wasm
+      - run: npm run forecast
+      - run: cp -r index.html style.css js wasm site/
       - uses: actions/upload-pages-artifact@v3
         with: { path: site }
   deploy:
