@@ -1,0 +1,5 @@
+html,body,#map{margin:0;height:100%;font:13px system-ui,sans-serif}
+#ui{position:absolute;top:8px;left:8px;z-index:2;background:#fffe;color:#111;padding:8px;border-radius:8px;max-width:290px}
+#ui>*{display:block;margin:4px 0;width:100%;box-sizing:border-box}#ui button{width:auto;display:inline-block}
+#lg{height:10px;border-radius:3px}
+#info{position:absolute;bottom:8px;left:8px;z-index:2;background:#fffe;color:#111;padding:6px 8px;border-radius:8px;white-space:pre;font:12px ui-monospace,monospace}
