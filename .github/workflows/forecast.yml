@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm install
-      - run: npm run build:wasm
+      - run: mkdir -p wasm && npm run build:wasm
       - run: npm run forecast
       - run: cp -r index.html style.css js wasm site/
       - uses: actions/upload-pages-artifact@v3
